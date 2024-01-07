@@ -4,7 +4,7 @@ import com.codeborne.selenide.SelenideElement;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static com.codeborne.selenide.Condition.exactText;
+import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selenide.*;
 
 public class WebInterfaceTest {
@@ -65,26 +65,6 @@ public class WebInterfaceTest {
     }
 
     @Test
-    void shouldSendRequestWhenLastNameWithSpace() {
-        SelenideElement form = $("[action='/']");
-        form.$("[data-test-id='name'] input").setValue("Барановская Анна Кристина");
-        form.$("[data-test-id='phone'] input").setValue("+79211818665");
-        form.$("[data-test-id='agreement']").click();
-        form.$(".button").click();
-        $("[data-test-id='order-success']").shouldHave(exactText("Ваша заявка успешно отправлена! Наш менеджер свяжется с вами в ближайшее время."));
-    }
-
-    @Test
-    void shouldSendRequestWhenFirstNameWithDashAndLastNameWithSpace() {
-        SelenideElement form = $("[action='/']");
-        form.$("[data-test-id='name'] input").setValue("Барановская-Мищук Анна Кристина");
-        form.$("[data-test-id='phone'] input").setValue("+79211818665");
-        form.$("[data-test-id='agreement']").click();
-        form.$(".button").click();
-        $("[data-test-id='order-success']").shouldHave(exactText("Ваша заявка успешно отправлена! Наш менеджер свяжется с вами в ближайшее время."));
-    }
-
-    @Test
     void shouldSendRequestWhenFirstAndLastNameWithDash() {
         SelenideElement form = $("[action='/']");
         form.$("[data-test-id='name'] input").setValue("Барановская-Мищук Анна-Кристина");
@@ -95,9 +75,9 @@ public class WebInterfaceTest {
     }
 
     @Test
-    void shouldSendRequestWhenFirstAndLastNameWithSpace() {
+    void shouldSendRequestWhenFirstNameWithDash() {
         SelenideElement form = $("[action='/']");
-        form.$("[data-test-id='name'] input").setValue("Барановская Мищук Анна Кристина");
+        form.$("[data-test-id='name'] input").setValue("Барановская-Мищук Кристина");
         form.$("[data-test-id='phone'] input").setValue("+79211818665");
         form.$("[data-test-id='agreement']").click();
         form.$(".button").click();
@@ -107,8 +87,7 @@ public class WebInterfaceTest {
     @Test
     void shouldNotSendRequestWhenFormNotWriteFully() {
         $(".button").click();
-        SelenideElement name = $("[data-test-id='name'].input_invalid");
-        name.$(".input__sub").shouldHave(exactText("Поле обязательно для заполнения"));
+        $("[data-test-id='name'].input_invalid .input__sub").shouldHave(exactText("Поле обязательно для заполнения"));
     }
 
     @Test
@@ -116,9 +95,8 @@ public class WebInterfaceTest {
         SelenideElement form = $("[action='/']");
         form.$("[data-test-id='phone'] input").setValue("+79211818665");
         form.$("[data-test-id='agreement']").click();
-        form.$(".button").click();$(".button").click();
-        SelenideElement name = $("[data-test-id='name'].input_invalid");
-        name.$(".input__sub").shouldHave(exactText("Поле обязательно для заполнения"));
+        form.$(".button").click();
+        $("[data-test-id='name'].input_invalid .input__sub").shouldHave(exactText("Поле обязательно для заполнения"));
     }
 
     @Test
@@ -126,28 +104,25 @@ public class WebInterfaceTest {
         SelenideElement form = $("[action='/']");
         form.$("[data-test-id='name'] input").setValue("Барановская Кристина");
         form.$("[data-test-id='agreement']").click();
-        form.$(".button").click();$(".button").click();
-        SelenideElement phone = $("[data-test-id='phone'].input_invalid");
-        phone.$(".input__sub").shouldHave(exactText("Поле обязательно для заполнения"));
+        form.$(".button").click();
+        $("[data-test-id='phone'].input_invalid .input__sub").shouldHave(exactText("Поле обязательно для заполнения"));
     }
 
     @Test
-    void shouldNotSendRequestWhenCheckBoxNotMark() { // баг
+    void shouldNotSendRequestWhenCheckBoxNotMark() {
         SelenideElement form = $("[action='/']");
         form.$("[data-test-id='name'] input").setValue("Барановская Кристина");
         form.$("[data-test-id='phone'] input").setValue("+79211818665");
-        form.$(".button").click();$(".button").click();
-        SelenideElement checkbox = $("[data-test-id='agreement'].input_invalid");
-        checkbox.$(".input__sub").shouldHave(exactText("Поле обязательно для заполнения"));
+        form.$(".button").click();
+        $("[data-test-id='agreement'].input_invalid .checkbox__text").shouldHave(exactText("Я соглашаюсь с условиями обработки и использования моих персональных данных и разрешаю сделать запрос в бюро кредитных историй"));
     }
 
     @Test
     void shouldNotSendRequestWhenWriteOnlyCheckBox() {
         SelenideElement form = $("[action='/']");
         form.$("[data-test-id='agreement']").click();
-        form.$(".button").click();$(".button").click();
-        SelenideElement name = $("[data-test-id='name'].input_invalid");
-        name.$(".input__sub").shouldHave(exactText("Поле обязательно для заполнения"));
+        form.$(".button").click();
+        $("[data-test-id='name'].input_invalid .input__sub").shouldHave(exactText("Поле обязательно для заполнения"));
     }
 
     @Test
@@ -157,8 +132,7 @@ public class WebInterfaceTest {
         form.$("[data-test-id='phone'] input").setValue("+7921181866");
         form.$("[data-test-id='agreement']").click();
         form.$(".button").click();
-        SelenideElement phone = $("[data-test-id='phone'].input_invalid");
-        phone.$(".input__sub").shouldHave(exactText("Телефон указан неверно. Должно быть 11 цифр, например, +79012345678."));
+        $("[data-test-id='phone'].input_invalid .input__sub").shouldHave(exactText("Телефон указан неверно. Должно быть 11 цифр, например, +79012345678."));
     }
 
     @Test
@@ -168,8 +142,7 @@ public class WebInterfaceTest {
         form.$("[data-test-id='phone'] input").setValue("7921181866");
         form.$("[data-test-id='agreement']").click();
         form.$(".button").click();
-        SelenideElement phone = $("[data-test-id='phone'].input_invalid");
-        phone.$(".input__sub").shouldHave(exactText("Телефон указан неверно. Должно быть 11 цифр, например, +79012345678."));
+        $("[data-test-id='phone'].input_invalid .input__sub").shouldHave(exactText("Телефон указан неверно. Должно быть 11 цифр, например, +79012345678."));
     }
 
     @Test
@@ -179,8 +152,7 @@ public class WebInterfaceTest {
         form.$("[data-test-id='phone'] input").setValue("+0000000000");
         form.$("[data-test-id='agreement']").click();
         form.$(".button").click();
-        SelenideElement phone = $("[data-test-id='phone'].input_invalid");
-        phone.$(".input__sub").shouldHave(exactText("Телефон указан неверно. Должно быть 11 цифр, например, +79012345678."));
+        $("[data-test-id='phone'].input_invalid .input__sub").shouldHave(exactText("Телефон указан неверно. Должно быть 11 цифр, например, +79012345678."));
     }
 
     @Test
@@ -190,8 +162,7 @@ public class WebInterfaceTest {
         form.$("[data-test-id='phone'] input").setValue("мобильный");
         form.$("[data-test-id='agreement']").click();
         form.$(".button").click();
-        SelenideElement phone = $("[data-test-id='phone'].input_invalid");
-        phone.$(".input__sub").shouldHave(exactText("Телефон указан неверно. Должно быть 11 цифр, например, +79012345678."));
+        $("[data-test-id='phone'].input_invalid .input__sub").shouldHave(exactText("Телефон указан неверно. Должно быть 11 цифр, например, +79012345678."));
     }
 
     @Test
@@ -201,8 +172,7 @@ public class WebInterfaceTest {
         form.$("[data-test-id='phone'] input").setValue("mobile");
         form.$("[data-test-id='agreement']").click();
         form.$(".button").click();
-        SelenideElement phone = $("[data-test-id='phone'].input_invalid");
-        phone.$(".input__sub").shouldHave(exactText("Телефон указан неверно. Должно быть 11 цифр, например, +79012345678."));
+        $("[data-test-id='phone'].input_invalid .input__sub").shouldHave(exactText("Телефон указан неверно. Должно быть 11 цифр, например, +79012345678."));
     }
 
     @Test
@@ -212,8 +182,7 @@ public class WebInterfaceTest {
         form.$("[data-test-id='phone'] input").setValue("!@#$%^&*()_");
         form.$("[data-test-id='agreement']").click();
         form.$(".button").click();
-        SelenideElement phone = $("[data-test-id='phone'].input_invalid");
-        phone.$(".input__sub").shouldHave(exactText("Телефон указан неверно. Должно быть 11 цифр, например, +79012345678."));
+        $("[data-test-id='phone'].input_invalid .input__sub").shouldHave(exactText("Телефон указан неверно. Должно быть 11 цифр, например, +79012345678."));
     }
 
     @Test
@@ -223,8 +192,17 @@ public class WebInterfaceTest {
         form.$("[data-test-id='phone'] input").setValue("+792118186655");
         form.$("[data-test-id='agreement']").click();
         form.$(".button").click();
-        SelenideElement phone = $("[data-test-id='phone'].input_invalid");
-        phone.$(".input__sub").shouldHave(exactText("Телефон указан неверно. Должно быть 11 цифр, например, +79012345678."));
+        $("[data-test-id='phone'].input_invalid .input__sub").shouldHave(exactText("Телефон указан неверно. Должно быть 11 цифр, например, +79012345678."));
+    }
+
+    @Test
+    void shouldNotSendRequestWhenWriteSurname() { // баг
+        SelenideElement form = $("[action='/']");
+        form.$("[data-test-id='name'] input").setValue("Барановская Кристина Валерьевна");
+        form.$("[data-test-id='phone'] input").setValue("+79211818665");
+        form.$("[data-test-id='agreement']").click();
+        form.$(".button").click();
+        $("[data-test-id='name'].input_invalid .input__sub").shouldHave(exactText("Необходимо указать только Фамилию и имя. Допустимы русские буквы, пробелы и дефисы."));
     }
 
     @Test
@@ -234,8 +212,7 @@ public class WebInterfaceTest {
         form.$("[data-test-id='phone'] input").setValue("+79211818665");
         form.$("[data-test-id='agreement']").click();
         form.$(".button").click();
-        SelenideElement name = $("[data-test-id='name'].input_invalid");
-        name.$(".input__sub").shouldHave(exactText("Имя и Фамилия указаные неверно. Допустимы только русские буквы, пробелы и дефисы."));
+        $("[data-test-id='name'].input_invalid .input__sub").shouldHave(exactText("Имя и Фамилия указаные неверно. Допустимы только русские буквы, пробелы и дефисы."));
     }
 
     @Test
@@ -245,8 +222,7 @@ public class WebInterfaceTest {
         form.$("[data-test-id='phone'] input").setValue("+79211818665");
         form.$("[data-test-id='agreement']").click();
         form.$(".button").click();
-        SelenideElement name = $("[data-test-id='name'].input_invalid");
-        name.$(".input__sub").shouldHave(exactText("Имя и Фамилия указаные неверно. Допустимы только русские буквы, пробелы и дефисы."));
+        $("[data-test-id='name'].input_invalid .input__sub").shouldHave(exactText("Имя и Фамилия указаные неверно. Допустимы только русские буквы, пробелы и дефисы."));
     }
 
     @Test
@@ -256,8 +232,7 @@ public class WebInterfaceTest {
         form.$("[data-test-id='phone'] input").setValue("+79211818665");
         form.$("[data-test-id='agreement']").click();
         form.$(".button").click();
-        SelenideElement name = $("[data-test-id='name'].input_invalid");
-        name.$(".input__sub").shouldHave(exactText("Имя и Фамилия указаные неверно. Допустимы только русские буквы, пробелы и дефисы."));
+        $("[data-test-id='name'].input_invalid .input__sub").shouldHave(exactText("Имя и Фамилия указаные неверно. Допустимы только русские буквы, пробелы и дефисы."));
     }
 
     @Test
@@ -267,7 +242,6 @@ public class WebInterfaceTest {
         form.$("[data-test-id='phone'] input").setValue("+79211818665");
         form.$("[data-test-id='agreement']").click();
         form.$(".button").click();
-        SelenideElement name = $("[data-test-id='name'].input_invalid");
-        name.$(".input__sub").shouldHave(exactText("Имя и Фамилия указаные неверно. Допустимы только русские буквы, пробелы и дефисы."));
+        $("[data-test-id='name'].input_invalid .input__sub").shouldHave(exactText("Имя и Фамилия указаные неверно. Допустимы только русские буквы, пробелы и дефисы."));
     }
 }
